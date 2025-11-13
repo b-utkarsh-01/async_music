@@ -1,0 +1,51 @@
+body {
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-family: "Inter", sans-serif;
+  transition: all 0.3s ease;
+}
+
+h1, h2, h3 {
+  color: #58a6ff;
+}
+
+input, button {
+  background-color: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+button:hover {
+  background-color: #238636;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  padding: 40px;
+  border-radius: 12px;
+  width: 350px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+}
+
+.google-btn {
+  background-color: #1f6feb;
+  border: none;
+}
+
+.google-btn:hover {
+  background-color: #388bfd;
+}
