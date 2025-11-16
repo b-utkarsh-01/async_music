@@ -6,7 +6,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const { user, userProfile, logout } = useAuth();
   const [tracks, setTracks] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -56,15 +56,32 @@ export default function Profile() {
   }
 
   return (
-    <div className="p-6 text-white">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl">Profile</h1>
-        <button onClick={logout} className="w-20 bg-red-600 text-white px-3 py-1 border rounded">Logout</button>
+    <div className="p-4 md:p-6 text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <h1 className="text-xl md:text-2xl">Profile</h1>
+        <button onClick={logout} className="w-full sm:w-20 bg-red-600 text-white px-3 py-1 border rounded text-sm md:text-base">Logout</button>
       </div>
 
       <div className="mb-6">
-        <h2 className="font-semibold">Account</h2>
-        <pre className="mt-2 bg-gray-800 p-4 rounded shadow text-sm">{JSON.stringify({ uid: user?.uid, email: user?.email }, null, 2)}</pre>
+        <h2 className="font-semibold mb-3">Account Information</h2>
+        <div className="bg-gray-800/50 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-gray-700/50 shadow-lg">
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="text-gray-400 font-medium min-w-[60px]">Email:</span>
+              <span className="text-white break-all">{user?.email}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="text-gray-400 font-medium min-w-[60px]">User ID:</span>
+              <span className="text-gray-300 text-sm font-mono break-all">{user?.uid}</span>
+            </div>
+            {userProfile?.username && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-gray-400 font-medium min-w-[60px]">Username:</span>
+                <span className="text-white">{userProfile.username}</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="mb-6">
@@ -81,13 +98,13 @@ export default function Profile() {
           <ul className="divide-y divide-gray-700">
             {tracks.map((t) => (
               <li key={t.id} className="py-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{t.title || t.name || 'Untitled'}</div>
-                    <div className="text-sm text-gray-400">{t.artist || t.uploader || ''}</div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">{t.title || t.name || 'Untitled'}</div>
+                    <div className="text-sm text-gray-400 truncate">{t.artist || t.uploader || ''}</div>
                   </div>
                   {t.url && (
-                    <audio controls src={t.url} className="w-48" />
+                    <audio controls src={t.url} className="w-full sm:w-48" />
                   )}
                 </div>
               </li>

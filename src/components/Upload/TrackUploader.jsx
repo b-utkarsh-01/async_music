@@ -84,7 +84,7 @@ export default function TrackUploader({ onUploaded } = {}) {
       </div>
 
       <div className="mb-2">
-        <input className="w-full p-2 bg-gray-800 rounded" placeholder="Tags (comma separated)" value={tags} onChange={(e) => setTags(e.target.value)} />
+        <input className="w-full p-2 bg-gray-800 rounded" placeholder="Tags (comma separated) eg. happy,neutral" value={tags} onChange={(e) => setTags(e.target.value)} />
       </div>
 
       <div className="flex items-center gap-2">

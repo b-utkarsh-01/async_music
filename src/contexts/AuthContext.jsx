@@ -8,7 +8,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../services/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../services/firebase";
 
 const AuthContext = createContext();
 
@@ -16,6 +17,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const signup = (email, password) =>
@@ -32,14 +34,27 @@ export function AuthProvider({ children }) {
   const logout = () => signOut(auth);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (u) {
+        // Fetch user profile from Firestore
+        try {
+          const userDoc = await getDoc(doc(db, 'users', u.uid));
+          if (userDoc.exists()) {
+            setUserProfile(userDoc.data());
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      } else {
+        setUserProfile(null);
+      }
       setUser(u);
       setLoading(false);
     });
     return unsub;
   }, []);
 
-  const value = { user, loading, signup, login, logout, loginWithGoogle };
+  const value = { user, userProfile, loading, signup, login, logout, loginWithGoogle };
 
   return (
     <AuthContext.Provider value={value}>
