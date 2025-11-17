@@ -1,7 +1,6 @@
 // src/features/mood/recommendations.js
 import { db } from "../../services/firebase";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
-import { fetchFreeTracks, transformJamendoTrack } from "../../services/jamendo";
 
 // Map face-api expressions to playlist tags
 const moodToTags = {
@@ -61,23 +60,11 @@ export async function getTracksForMood(mood, max = 10) {
       return firestoreTracks.slice(0, max);
     }
 
-    // Otherwise, supplement with API tracks
-    const remaining = max - firestoreTracks.length;
-    const apiTracks = await fetchFreeTracks(remaining, tags);
-    const transformedApiTracks = apiTracks.map(transformJamendoTrack);
-
-    return [...firestoreTracks, ...transformedApiTracks];
+    // No fallback - just return what we have from Firestore
+    return firestoreTracks;
   } catch (err) {
     console.error("getTracksForMood error:", err);
-    // Fallback to API tracks only
-    try {
-      const tags = moodToTags[mood] || [mood];
-      const apiTracks = await fetchFreeTracks(max, tags);
-      return apiTracks.map(transformJamendoTrack);
-    } catch (apiErr) {
-      console.error("API fallback failed:", apiErr);
-      return [];
-    }
+    return [];
   }
 }
 

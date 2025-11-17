@@ -9,13 +9,32 @@ export const PlayerBar = () => {
 
   // Listen for track play events from other components
   useEffect(() => {
-    const handlePlayTrack = (event) => {
+    const handlePlayTrack = async (event) => {
       const track = event.detail;
+      console.log('Playing track:', track);
+      console.log('Track URL:', track.url);
+      console.log('Track source:', track.source);
+
+      let finalUrl = track.url;
+
+
+
+      // Check if this is a Firebase Storage track
+      if (track.source === 'firestore' && track.url) {
+        // Firebase Storage URLs should be accessible
+        console.log('Firebase Storage URL detected');
+      }
+
       setCurrentTrack(track);
       setIsPlaying(true);
       if (audioRef.current) {
-        audioRef.current.src = track.url;
-        audioRef.current.play().catch(console.error);
+        audioRef.current.src = finalUrl;
+        audioRef.current.load(); // Force reload of audio source
+        audioRef.current.play().catch((error) => {
+          console.error('Error playing audio:', error);
+          console.error('Track details:', track);
+          console.error('Audio src after error:', audioRef.current.src);
+        });
       }
     };
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import MoodDetector from '../components/Mood/MoodDetector';
-import { searchPagalWorldSongs, transformPagalWorldSong } from '../services/pagalworld';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -20,24 +19,16 @@ export default function Home() {
         const tracksSnap = await getDocs(tracksQuery);
         const firestoreTracks = [];
         tracksSnap.forEach((doc) => {
-          firestoreTracks.push({ id: doc.id, ...doc.data(), source: 'firestore' });
+          const trackData = doc.data();
+          console.log('Firestore track:', trackData);
+          firestoreTracks.push({ id: doc.id, ...trackData, source: 'firestore' });
         });
 
         if (firestoreTracks.length > 0) {
-          // Mix user tracks with API tracks
-          const remaining = 10 - firestoreTracks.length;
-          if (remaining > 0) {
-            const pagalworldTracks = await searchPagalWorldSongs('popular music', remaining);
-            const transformed = pagalworldTracks.map(transformPagalWorldSong);
-            setFreeTracks([...firestoreTracks, ...transformed]);
-          } else {
-            setFreeTracks(firestoreTracks);
-          }
+          setFreeTracks(firestoreTracks);
         } else {
-          // Fallback to PagalWorld if no user tracks
-          const pagalworldTracks = await searchPagalWorldSongs('popular music', 10);
-          const transformed = pagalworldTracks.map(transformPagalWorldSong);
-          setFreeTracks(transformed);
+          // No fallback - just show empty state
+          setFreeTracks([]);
         }
       } catch (error) {
         console.error('Failed to load free tracks:', error);
@@ -65,10 +56,8 @@ export default function Home() {
         if (firestoreTracks.length > 0) {
           setRecommendedTracks(firestoreTracks);
         } else {
-          // Fallback to PagalWorld if no user tracks
-          const pagalworldTracks = await searchPagalWorldSongs('trending songs', 5);
-          const transformed = pagalworldTracks.map(transformPagalWorldSong);
-          setRecommendedTracks(transformed);
+          // No fallback - just show empty state
+          setRecommendedTracks([]);
         }
       } catch (error) {
         console.error('Failed to load recommended tracks:', error);
@@ -79,6 +68,7 @@ export default function Home() {
     };
     loadRecommendedTracks();
   }, []);
+
 
   const handlePlayTrack = (track) => {
     // Dispatch custom event to player bar
@@ -180,6 +170,8 @@ export default function Home() {
             </div>
           )}
         </section>
+
+
 
         {/* Your Playlists Section */}
         <section>
