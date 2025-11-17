@@ -1,15 +1,13 @@
 import React from 'react';
 import Navbar from './Navbar';
-import { PlayerBar } from '../Player/PlayerBar';
 
 const MainLayout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+    <div className="flex flex-col">
       <Navbar />
-      <main className="flex-grow p-4">
+      <main className="flex-grow p-4 pb-24 md:mb-90">
         {children}
       </main>
-      <PlayerBar />
     </div>
   );
 };

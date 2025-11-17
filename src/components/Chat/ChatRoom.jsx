@@ -269,13 +269,13 @@ export default function ChatRoom() {
       </button>
 
       {/* Left Sidebar - Chat List */}
-      <div className={` w-80 bg-gray-800 border-r border-gray-700 flex flex-col fixed md:relative inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out`}>
+      <div className={` md:w-80 w-60 md:mb-40 md:-mt-3  bg-gray-800 border-r border-gray-700 flex flex-col fixed md:relative inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <div className="p-3 md:p-4 border-b border-gray-700">
           <div className="flex items-center justify-between ">
             <h2 className="text-base md:text-lg font-semibold">Private Chats</h2>
             <button
               onClick={() => setShowRequests(!showRequests)}
-              className="px-3 py-1 mt-3 rounded text-sm relative w-[30%]"
+              className="pr-3 md:px-4 py-1 mt-3 rounded text-sm relative w-[40%] "
             >
               Requests
               {chatRequests.filter(r => r.status === 'pending' && r.toUid === user.uid).length > 0 && (

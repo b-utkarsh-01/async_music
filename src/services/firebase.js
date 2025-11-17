@@ -6,7 +6,7 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC8wmHDtX9AHFKhd9IHLmYqi87myF5o7lo",
-  authDomain: "async-music.firebaseapp.com",
+  authDomain: "async-music.vercel.app",
   projectId: "async-music",
   storageBucket: "async-music.appspot.com",
   messagingSenderId: "425046929612",
