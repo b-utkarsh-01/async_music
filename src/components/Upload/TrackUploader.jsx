@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { uploadTrackFile } from '../../services/upload';
+import { uploadTrackFile, addTrackViaUrl } from '../../services/upload';
 
 export default function TrackUploader({ onUploaded } = {}) {
   const { user } = useAuth();
+  const [mode, setMode] = useState('file'); // 'file' or 'url'
   const [file, setFile] = useState(null);
+  const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [tags, setTags] = useState('');
@@ -36,27 +38,43 @@ export default function TrackUploader({ onUploaded } = {}) {
     if (!title) setTitle(f.name.replace(/\.[^.]+$/, ''));
   };
 
-  const handleUpload = async () => {
+  const handleSubmit = async () => {
     setError('');
     setSuccess('');
-    if (!file) return setError('Please choose a file first');
+    if (mode === 'file') {
+      if (!file) return setError('Please choose a file first');
+    } else {
+      if (!url) return setError('Please enter a URL');
+    }
     try {
       const tagsArray = tags
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const res = await uploadTrackFile({
-        file,
-        user,
-        title: title || file.name,
-        artist,
-        tags: tagsArray,
-        onProgress: (p) => setProgress(p),
-      });
+      let res;
+      if (mode === 'file') {
+        res = await uploadTrackFile({
+          file,
+          user,
+          title: title || file.name,
+          artist,
+          tags: tagsArray,
+          onProgress: (p) => setProgress(p),
+        });
+      } else {
+        res = await addTrackViaUrl({
+          url,
+          user,
+          title: title || 'Untitled',
+          artist,
+          tags: tagsArray,
+        });
+      }
 
-      setSuccess('Upload complete');
+      setSuccess('Track added successfully');
       setFile(null);
+      setUrl('');
       setTitle('');
       setArtist('');
       setTags('');
@@ -64,19 +82,47 @@ export default function TrackUploader({ onUploaded } = {}) {
       if (onUploaded) onUploaded(res);
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Upload failed');
+      setError(err.message || 'Failed to add track');
     }
   };
 
   return (
     <div className="mb-6 bg-gray-900 p-4 rounded">
-      <h3 className="font-semibold mb-2">Upload Track</h3>
+      <h3 className="font-semibold mb-2">Add Track</h3>
 
-      <div className="mb-2">
-        <label className="block text-sm text-gray-300">File</label>
-        <input type="file" accept="audio/*" onChange={handleFile} />
-        {file && <div className="text-sm mt-1 text-gray-400">Selected: {file.name} ({Math.round(file.size / 1024)} KB)</div>}
+      <div className="mb-4 flex gap-2">
+        <button
+          onClick={() => setMode('file')}
+          className={`px-3 py-1 rounded ${mode === 'file' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+        >
+          Upload File
+        </button>
+        <button
+          onClick={() => setMode('url')}
+          className={`px-3 py-1 rounded ${mode === 'url' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+        >
+          Add via URL
+        </button>
       </div>
+
+      {mode === 'file' ? (
+        <div className="mb-2">
+          <label className="block text-sm text-gray-300">File</label>
+          <input type="file" accept="audio/*" onChange={handleFile} />
+          {file && <div className="text-sm mt-1 text-gray-400">Selected: {file.name} ({Math.round(file.size / 1024)} KB)</div>}
+        </div>
+      ) : (
+        <div className="mb-2">
+          <label className="block text-sm text-gray-300">URL</label>
+          <input
+            type="url"
+            className="w-full p-2 bg-gray-800 rounded"
+            placeholder="https://example.com/song.mp3"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2 mb-2">
         <input className="p-2 bg-gray-800 rounded" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -88,7 +134,9 @@ export default function TrackUploader({ onUploaded } = {}) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button onClick={handleUpload} className="bg-green-600 px-3 py-1 rounded text-white">Upload</button>
+        <button onClick={handleSubmit} className="bg-green-600 px-3 py-1 rounded text-white">
+          {mode === 'file' ? 'Upload' : 'Add Track'}
+        </button>
         <div className="text-sm text-gray-400">{progress > 0 ? `Progress: ${progress}%` : ''}</div>
       </div>
 

@@ -39,4 +39,18 @@ export function uploadTrackFile({ file, user, title, artist, tags = [], onProgre
   });
 }
 
+export function addTrackViaUrl({ url, user, title, artist, tags = [] }) {
+  if (!user) return Promise.reject(new Error('Not authenticated'));
+  if (!url || !url.startsWith('http')) return Promise.reject(new Error('Invalid URL'));
+
+  return addDoc(collection(db, 'tracks'), {
+    title,
+    artist,
+    url,
+    ownerId: user.uid,
+    tags,
+    createdAt: serverTimestamp(),
+  }).then((doc) => ({ url, docId: doc.id }));
+}
+
 export default uploadTrackFile;
