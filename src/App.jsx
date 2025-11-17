@@ -12,42 +12,43 @@ import "./theme/dark.css";
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+      <Router basename="/async_music">
+        <Routes>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Protected routes with MainLayout */}
-        <Route
-          path="/"
-          element={
-            <MainLayout>
-              <Home />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
+          {/* Protected routes with MainLayout */}
+          <Route
+            path="/"
+            element={
               <MainLayout>
-                <Profile />
+                <Home />
               </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <ChatRoom />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+            }
+          />
 
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Profile />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ChatRoom />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }
